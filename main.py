@@ -9,34 +9,24 @@ from os import system, name
 
 # Hücre class
 
+isDeadArray=[[1,1,0,0,1,1,1,1,1],[1,1,1,0,1,1,1,1,1]]
 
 class Cell:
     def __init__(self, *args, **kwargs):
-        self.isDead = True
+        self.isDead = 1
         self.neighbours = []  # Komşuluk dizisi
         self.aliveCount=0
 
     def AliveCountCalc(self):
         self.aliveCount = 0
         for n in self.neighbours:  # Hücresnin kaç canlı komşusu olduğunu hesaplayan for
-            if(n.isDead == False):
-                self.aliveCount += 1
+                self.aliveCount += 1-n.isDead
 
-    def DeadCalc(self):
-        if(self.isDead == False):  # Canlı hücre sayısına göre yaşam veya ölüme karar
-            if(self.aliveCount < 2):
-                self.isDead = True
-            elif(self.aliveCount > 3):
-                self.isDead = True
-        else:
-            if(self.aliveCount == 3):
-                self.isDead = False
+    def DeadCalc(self): # Canlı hücre sayısına göre yaşam veya ölüme karar
+            self.isDead=isDeadArray[self.isDead][self.aliveCount]
 
     def __repr__(self):  # Print işleminde yaşam durumuna göre yazılacak harf
-        if(self.isDead):
-            return "D"
-        else:
-            return "A"
+            return str(chr((1-self.isDead)*32+32+(1-self.isDead)))
 
 
 column, row = 20, 20
@@ -55,15 +45,37 @@ for i in range(1, column-1):
         cells[i][j].neighbours.append(cells[i][j+1])
         cells[i][j].neighbours.append(cells[i+1][j+1])
 # Başlangıç değerleri
-cells[2, 6].isDead = False
-cells[3, 7].isDead = False
-cells[4, 5].isDead = False
-cells[4, 6].isDead = False
-cells[4, 7].isDead = False
+cells[8, 8].isDead = 0
+cells[8, 9].isDead = 0
+cells[8, 10].isDead = 0
 
-print(cells)
+cells[9, 8].isDead = 0
+cells[9, 10].isDead = 0
+
+cells[10, 8].isDead = 0
+cells[10, 9].isDead = 0
+cells[10, 10].isDead = 0
+
+cells[11, 8].isDead = 0
+cells[11, 9].isDead = 0
+cells[11, 10].isDead = 0
+
+cells[12, 8].isDead = 0
+cells[12, 9].isDead = 0
+cells[12, 10].isDead = 0
+
+cells[13, 8].isDead = 0
+cells[13, 10].isDead = 0
+
+cells[14, 8].isDead = 0
+cells[14, 9].isDead = 0
+cells[14, 10].isDead = 0
+
+
 # Saniyede bir çalışan jenerasyon döngüsü
 while(True):
+    print(cells)
+    time.sleep(1)
     for row in cells:
         for c in row:
             c.AliveCountCalc()
@@ -71,5 +83,4 @@ while(True):
         for c in row:
             c.DeadCalc()
     system('cls')
-    print(cells)
-    time.sleep(1)
+
