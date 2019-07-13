@@ -40,7 +40,7 @@ def CellsCalc():
     for row in cells:
         for c in row:
             c.DeadCalc()
-    timer = threading.Timer(0.1, CellsCalc) #jenerasyonlar arası geçecek süre
+    timer = threading.Timer(0.3, CellsCalc) #jenerasyonlar arası geçecek süre
     timer.start() 
 
 
