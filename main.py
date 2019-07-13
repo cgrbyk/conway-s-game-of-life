@@ -1,6 +1,9 @@
 import numpy as np
 import time
 from os import system, name
+import random
+import pygame
+import threading
 # Kurallar
 # Bir canlı hücrenin, iki'den daha az canlı komşusu varsa "yalnızlık nedeniyle" ölür
 # Bir canlı hücrenin, üç'ten daha fazla canlı komşusu varsa "kalabalıklaşma nedeniyle" ölür
@@ -10,11 +13,11 @@ from os import system, name
 # Hücre class
 
 isDeadArray=[[1,1,0,0,1,1,1,1,1],[1,1,1,0,1,1,1,1,1]]
-
+jen=0
 class Cell:
     def __init__(self, *args, **kwargs):
         self.isDead = 1
-        self.neighbours = []  # Komşuluk dizisi
+        self.neighbours = []  # Komşuluk dizisi7
         self.aliveCount=0
 
     def AliveCountCalc(self):
@@ -26,10 +29,22 @@ class Cell:
             self.isDead=isDeadArray[self.isDead][self.aliveCount]
 
     def __repr__(self):  # Print işleminde yaşam durumuna göre yazılacak harf
-            return str(chr((1-self.isDead)*32+32+(1-self.isDead)))
+            return str(chr((1-self.isDead)*33+32))
+
+def CellsCalc():
+    global jen
+    jen+=1
+    for row in cells:
+        for c in row:
+            c.AliveCountCalc()
+    for row in cells:
+        for c in row:
+            c.DeadCalc()
+    timer = threading.Timer(0.5, CellsCalc) 
+    timer.start() 
 
 
-column, row = 20, 20
+column, row = 80, 60
 cells = []
 for i in range(column*row):
     cells.append(Cell())
@@ -44,43 +59,30 @@ for i in range(1, column-1):
         cells[i][j].neighbours.append(cells[i-1][j+1])
         cells[i][j].neighbours.append(cells[i][j+1])
         cells[i][j].neighbours.append(cells[i+1][j+1])
-# Başlangıç değerleri
-cells[8, 8].isDead = 0
-cells[8, 9].isDead = 0
-cells[8, 10].isDead = 0
-
-cells[9, 8].isDead = 0
-cells[9, 10].isDead = 0
-
-cells[10, 8].isDead = 0
-cells[10, 9].isDead = 0
-cells[10, 10].isDead = 0
-
-cells[11, 8].isDead = 0
-cells[11, 9].isDead = 0
-cells[11, 10].isDead = 0
-
-cells[12, 8].isDead = 0
-cells[12, 9].isDead = 0
-cells[12, 10].isDead = 0
-
-cells[13, 8].isDead = 0
-cells[13, 10].isDead = 0
-
-cells[14, 8].isDead = 0
-cells[14, 9].isDead = 0
-cells[14, 10].isDead = 0
-
-
+        cells[i][j].isDead=random.randint(0,1)
+pygame.init()
+gameDisplay=pygame.display.set_mode((800,600))
+pygame.display.set_caption('Conways Game of Life')
+clock=pygame.time.Clock()
+gameDisplay.fill((255,255,255))
+font = pygame.font.SysFont("comicsansms", 12)
+text = font.render('jenerasyon :'+str(jen), True, (0, 128, 0))
+isCrashed=0
 # Saniyede bir çalışan jenerasyon döngüsü
-while(True):
-    print(cells)
-    time.sleep(1)
-    for row in cells:
-        for c in row:
-            c.AliveCountCalc()
-    for row in cells:
-        for c in row:
-            c.DeadCalc()
+CellsCalc()
+while(isCrashed != 12):
+    for i in range(0, column):
+        for j in range(0, row):
+            pygame.draw.rect(gameDisplay,(cells[i][j].isDead*255,cells[i][j].isDead*255,cells[i][j].isDead*255),pygame.Rect(i*10,j*10,10,10))
+    text = font.render('jenerasyon :'+str(jen), True, (0, 128, 0))
+    gameDisplay.blit(text,(0,0))
+    for event in pygame.event.get():
+            isCrashed=event.type
+    pygame.display.update()
+    clock.tick(60)
+
+
     system('cls')
+pygame.quit()
+quit()
 
